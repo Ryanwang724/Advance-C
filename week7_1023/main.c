@@ -77,7 +77,15 @@ void get_input(tNumStorHead *list)
         }
         else if(addOrDelete == 2)
         {
-            delete(list);
+            if(list->counts == 0)
+            {
+                printf("   There is nothing to delete!\n\n");
+                continue;
+            }
+            else
+            {
+                delete(list);
+            }
         }
         else
         {
@@ -88,7 +96,7 @@ void get_input(tNumStorHead *list)
 
 void delete(tNumStorHead *list)
 {
-    int location = -1;    //target location
+    int location = 0;     //target location
     int i = 0;            //loop control
 
     while(location > list->counts || location <= 0)  //check if it is in range
@@ -106,21 +114,21 @@ void delete(tNumStorHead *list)
         list->head = NULL;
         list->tail = NULL;
     }
-    else if(location == 1)      //最前面
+    else if(location == 1)                                     //head
     {
         list->head = list->head->next;
         list->head->previous = NULL;
     }
-    else if(list->counts != 1 && location == list->counts)     //最後面
+    else if(list->counts != 1 && location == list->counts)     //tail
     {
         list->tail = list->tail->previous;
         list->tail->next = NULL;
     }
-    else         //中間
+    else                                                       //middle
     {
         tNumStorage *ptr;
         ptr = list->head;
-        for(i=0;i<location-1;i++)  //move to target location
+        for(i=0;i<location-1;i++)   //move to target location
         {
             ptr = ptr->next;
         }
@@ -139,9 +147,9 @@ void add(tNumStorHead *list, int input)
     newNode->next = NULL;
     newNode->previous = NULL;
 
-    int location = -1;  //target location
+    int location = 0;   //target location
     int BA = -1;        //Before After
-    int i = 0;         //loop control
+    int i = 0;          //loop control
 
     if(list->counts == 0)
     {
@@ -164,40 +172,40 @@ void add(tNumStorHead *list, int input)
         {
             printf("  1. Before or 2. After the location %d: ",location);
             scanf("%d",&BA);
-            if(BA != 1 && BA != 2) 
+            if(BA != 1 && BA != 2)    //check if BA == 1 or 2
             {
                 printf("  Error location !(1.Before or 2. After)");
             }
         }
 
-        if(BA == 1 && location == 1) //最前面
+        if(BA == 1 && location == 1)                   //head
         {
             newNode->next = list->head;
             list->head->previous = newNode;
             list->head = newNode;
         }
-        else if(BA == 2 && location == list->counts) //最後面
+        else if(BA == 2 && location == list->counts)   //tail
         {
             newNode->previous = list->tail;
             list->tail->next = newNode;
             list->tail = newNode;
         }
-        else //中間
+        else                                           //middle
         {
             tNumStorage *ptr;
             ptr = list->head;
-            for(i=0;i<location-1;i++)  //move to target location
+            for(i=0;i<location-1;i++)             //move to target location
             {
                 ptr = ptr->next;
             }
-            if(BA == 1)   //before target location
+            if(BA == 1)                           //before target location
             {
                 newNode->next = ptr;
                 newNode->previous = ptr->previous;
                 ptr->previous->next = newNode;
                 ptr->previous = newNode;
             }
-            else if(BA == 2)   //after target location
+            else if(BA == 2)                       //after target location
             {
                 newNode->previous = ptr;
                 newNode->next = ptr->next;
