@@ -65,7 +65,6 @@ int main (void)
     int i, length;
     char HorB;
     char *buf = (char*) malloc( TOTAL * sizeof(char));
-    int (*func[2])(char *, int) = {H2D, B2D};
     
     while (1)
     {   
