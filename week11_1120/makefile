@@ -10,4 +10,3 @@ $(EXE): $(OBJ)
 
 clean:
 	del $(EXE).exe *.o *.d core
-

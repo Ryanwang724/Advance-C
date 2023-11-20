@@ -37,12 +37,11 @@ void handle_push_operation(tStack *stack_ptr)
         tNode *ptr = stack_ptr->head;
         while(ptr->next != NULL) 
         {
-            ptr = ptr->next;
+            ptr = ptr->next;   //go to the last node
         }
         ptr->next = node;
     }
     stack_ptr->count++;
-    //free(ptr);
     return; 
 }
 
@@ -65,15 +64,14 @@ void handle_pop_operation(tStack *stack_ptr)
         tNode *ptr = stack_ptr->head;
         while(ptr->next != NULL && ptr->next->next != NULL) 
         {
-            ptr = ptr->next;
+            ptr = ptr->next;    //go to the last but one node
         }
         printf("  handle_pop_operation(): poped value: %d\n",ptr->next->data_ptr->score);
         return_score_space(ptr->next->data_ptr->loc);
-        free(ptr->next); // 釋放彈出節點的內存
-        ptr->next = NULL; // 更新倒數第二個節點的next指針
+        free(ptr->next); 
+        ptr->next = NULL;
     }
     stack_ptr->count--;
-    //free(ptr);
 }
 
 void print_stack_content(tStack *stack_ptr)
@@ -92,6 +90,4 @@ void print_stack_content(tStack *stack_ptr)
         ptr = stack_ptr->head;  //reset ptr
     }
     printf("\n");
-    //free(ptr);
 }
-
