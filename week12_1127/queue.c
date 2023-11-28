@@ -21,7 +21,7 @@ int enqueue_node(tQueue *queue, int id, int score, int data_type)
     tQueueNode *newptr = NULL;
     int mem_location;
 
-    our_malloc (data_type, &newptr, &mem_location);
+    our_malloc (data_type,(void **)&newptr, &mem_location);
     
     if (newptr == NULL)
     {
@@ -66,6 +66,11 @@ void dequeue_node(tQueue *queue, tQueueNode *target, int data_type)
     {
         queue->rear = target->prev;
         target->prev->next = NULL;
+    }
+    else if(target == queue->front) //first node
+    {
+        queue->front = target->next;
+        target->next->prev = NULL;
     }
     else   //middle node
     {

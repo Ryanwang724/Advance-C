@@ -85,6 +85,7 @@ int test_dual_location(unsigned char mask, int mask_length)
         }
         test = test << 1;
     }
+    return -1;
 }
 
 void set_dual_bit(unsigned char *mask, int location)
