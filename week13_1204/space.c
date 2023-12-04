@@ -40,7 +40,7 @@ void our_malloc(int type, void **target, int *mem_location)
         {
             location = test_single_location(byte_large_buf_mask, NUM_LARGE_BYTE_BUF);
             set_single_bit(&byte_large_buf_mask, location);
-            *target = &buffer[LARGE_START+location*SMALL_ELEMENT_SIZE];
+            *target = &buffer[LARGE_START+location*LARGE_ELEMENT_SIZE];
             *mem_location = NUM_LARGE_BYTE_BUF + location;
         }
         else
@@ -159,11 +159,19 @@ void clear_dual_bit(unsigned char *mask, int location)
 
 void our_free(int type, int mem_location)
 {
-    if (type == TYPE_SMALL)
+    if (type == TYPE_SMALL && mem_location < 8)
     {
         clear_single_bit(&byte_small_buf_mask, mem_location);
     }
-    else if (type == TYPE_LARGE)
+    else if(type == TYPE_SMALL && mem_location >= 8) // 小的放到大的
+    {
+        clear_single_bit(&byte_large_buf_mask, mem_location-NUM_SMALL_BYTE_BUF);
+    }
+    else if (type == TYPE_LARGE && mem_location < 8) // 大的放到小的
+    {
+        clear_dual_bit(&byte_small_buf_mask, mem_location);
+    }
+    else if(type == TYPE_LARGE && mem_location >= 8)
     {
         clear_single_bit(&byte_large_buf_mask, mem_location-NUM_SMALL_BYTE_BUF);
     }
