@@ -21,7 +21,7 @@ tQueue* createQueue(void);
 
 int enqueue_node(tQueue *queue, int id, int score, int data_type);
 void dequeue_node(tQueue *queue, tQueueNode *target, int data_type);
-tQueueNode *find_target_node(tQueue *queue, int id, int data_type);
+tQueueNode *find_target_node(tQueue *queue, int id);
 
 void print_queue(tQueue *queue);
 

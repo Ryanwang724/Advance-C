@@ -6,15 +6,15 @@ int main (void)
 {
     tQueue *queue;
     int operation, units;
+    int rows = NUM_BYTE_BUF / 8 + 1;
     tQueueNode *target_node;
-    int id, score=0, ret, remain = NUM_BYTE_BUF;
+    int id, score=0, ret, remainMemory = NUM_BYTE_BUF;
     queue = createQueue();
     create_mask();
 
     while (1)
     {
-
-        printf("Remaining memory space %d\n",remain);
+        printf("Remaining memory space %d\n",remainMemory);
         printf("\nWhich type you are going to operate? \n");
         printf("1. Add an item\n");
         printf("2. Remove an item with a specific Id\n");
@@ -34,22 +34,22 @@ int main (void)
             {
                 printf("    Cannot enter to the queue\n");
             }
-            print_buffer_status();
+            remainMemory = print_buffer_status();
         }
         else if (operation == 2)
         {
             printf ("  Enter an ID to remove ");
             scanf("%d", &id);
-            target_node = find_target_node(queue, id, (operation == 3 ? TYPE_SMALL : TYPE_LARGE));
+            target_node = find_target_node(queue, id);
             if (target_node == NULL)
             {
                 printf ("    Cannot find the target node \n");
             }
             else
             {
-                dequeue_node(queue, target_node, (operation == 3 ? TYPE_SMALL : TYPE_LARGE));
+                dequeue_node(queue, target_node, target_node->data_type);
             }
-            print_buffer_status();
+            remainMemory = print_buffer_status();
 
         }
         else 

@@ -17,7 +17,7 @@ extern storageLocation result;
 
 void create_mask (void);
 void free_mask (void);
-void print_buffer_status(void);
+int print_buffer_status(void);
 int check_buf_is_all_full(void);
 void our_malloc(int type, void **target, int *mem_location);
 storageLocation find_location(unsigned char **mask, int data_type);

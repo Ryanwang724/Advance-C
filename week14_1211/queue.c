@@ -28,7 +28,7 @@ int enqueue_node(tQueue *queue, int id, int score, int data_type)
         printf("    Enqueue False!!! \n");
         return 0;
     }
-    printf("mem_location: %d\n",mem_location);
+    //printf("mem_location: %d\n",mem_location);
     newptr->next = NULL; //set the value
     newptr->prev = NULL;
     newptr->data_type = data_type;
@@ -57,6 +57,11 @@ int enqueue_node(tQueue *queue, int id, int score, int data_type)
 
 void dequeue_node(tQueue *queue, tQueueNode *target, int data_type)
 {
+    int row,location;   //將target->location(0~NUM_BYTE_BUF)轉成row跟location
+    int rows = NUM_BYTE_BUF / 8 + 1;
+    location = target->location % 8;
+    row = rows - (target->location / 8) - 1;
+
     if(queue->count == 1)
     {
         queue->front = NULL;
@@ -81,16 +86,17 @@ void dequeue_node(tQueue *queue, tQueueNode *target, int data_type)
     target->prev = NULL;
 
     queue->count--;
-    clear_bit(byte_buf_mask, result.row, result.location, data_type);
+
+    clear_bit(byte_buf_mask, row, location, data_type);
 }
 
-tQueueNode *find_target_node(tQueue *queue, int id, int data_type)
+tQueueNode *find_target_node(tQueue *queue, int id)
 {
     int i;
     tQueueNode *target = queue->front;
     while(target != NULL)
     {
-        if(target->id == id && target->data_type == data_type)
+        if(target->id == id)
         {
             return target;
         }
@@ -111,5 +117,5 @@ void print_queue (tQueue *queue)
         printf ("%d(%d, %d) ", target->id, target->location, target->data_type); // id location size
         target = target->next;
     }
-    printf("\n");
+    printf("\n\n");
 }

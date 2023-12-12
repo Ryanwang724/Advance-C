@@ -32,9 +32,11 @@ void free_mask (void)
     free(byte_buf_mask);
 }  
 
-void print_buffer_status (void)
+int print_buffer_status (void)
 {
     int i,j;
+    int currentBit;
+    int remainMemorySpace = 0;
     unsigned char mask = 0x80;
 
     printf ("      byte_buf_mask: ");
@@ -46,7 +48,12 @@ void print_buffer_status (void)
             mask = mask >> (8 - remain); //將mask移到指定位置開始
             for (j = 0; j< remain; j++)
             {
-                printf ("%d ", (*byte_buf_mask[i] & mask) >> ((8 - remain - 1)-j)); //印出first row
+                currentBit = (*byte_buf_mask[i] & mask) >> (remain-j-1);
+                printf ("%d ", currentBit); //印出first row
+                if(currentBit == 0)
+                {
+                    remainMemorySpace++;
+                }
                 mask = mask >> 1;
             }
             printf(", ");
@@ -56,7 +63,12 @@ void print_buffer_status (void)
         {
             for (j = 0; j< 8; j++)
             {
-                printf ("%d ", (*byte_buf_mask[i] & mask) >> (7-j));
+                currentBit = (*byte_buf_mask[i] & mask) >> (7-j);
+                printf ("%d ", currentBit);
+                if(currentBit == 0)
+                {
+                    remainMemorySpace++;
+                }
                 mask = mask >> 1;
             }
             printf(", ");
@@ -64,6 +76,7 @@ void print_buffer_status (void)
         }
     }
     printf ("\n");
+    return remainMemorySpace;
 }
 
 int check_buf_is_all_full(void)     //0 is not full; 1 is all full
@@ -107,14 +120,18 @@ void our_malloc(int type, void **target, int *mem_location)
     else
     {
         result = find_location(byte_buf_mask, type);
-// #ifdef DEBUG        
-//         printf("location: %d, row: %d",result.location,result.row);
-// #endif
-        printf("location: %d, row: %d\n",result.location,result.row);
-        set_bit(byte_buf_mask, result.row, result.location, type);       
-        location = (rows-1-result.row)*8 + result.location;
-        *target = &buffer[location*UNIT_ELEMENT_SIZE];
-        *mem_location = location;
+        //printf("location: %d, row: %d\n",result.location,result.row);
+        if(result.location != -1 && result.row != -1)
+        {
+            set_bit(byte_buf_mask, result.row, result.location, type);       
+            location = (rows-1-result.row)*8 + result.location;  //0~NUM_BYTE_BUF
+            *target = &buffer[location*UNIT_ELEMENT_SIZE];
+            *mem_location = location;
+        }
+        else
+        {
+            return;
+        }
     }
 }
 
@@ -142,6 +159,7 @@ storageLocation find_location(unsigned char **mask, int data_type)
                     }
                     result.row = currentRow + cnt; //space start location 的 row
                     result.location = bitIndex - data_type + 1;
+                    printf("passssssssssssssssssss\n");
                     return  result;  //return space start location
                 }
             }
@@ -163,18 +181,19 @@ void set_bit(unsigned char **mask, int row, int location, int data_type)
 {
     unsigned char set = 0x01;
 
-    if(location != 0)
-    {
-        set = set << location-1;  //go to target bit
-    }
+    set = set << location;  //go to target bit
+    
     for(int i=0;i<data_type;i++)
     {
         *mask[row] = *mask[row] | set;
-        set = set << 1;
         if(set == 0x80)
         {
             set = 0x01; //reset
             row = row - 1;
+        }
+        else
+        {
+            set = set << 1;
         }
     }
 }
@@ -183,15 +202,20 @@ void clear_bit(unsigned char **mask, int row, int location, int data_type)
 {
     unsigned char set = 0x01;
 
-    set = set << location-1;  //go to target bit
+    set = set << location;  //go to target bit
+    //printf("clear bit location: %d\n",location);
+
     for(int i=0;i<data_type;i++)
     {
-        set = set << 1;
         *mask[row] = *mask[row] & (~set);
         if(set == 0x80)
         {
             set = 0x01; //reset
             row = row - 1;
+        }
+        else
+        {
+            set = set << 1;
         }
     }
 }
