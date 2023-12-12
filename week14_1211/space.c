@@ -19,8 +19,16 @@ void create_mask (void)
 
     for(int i=0;i<rows;i++)   //initial
     {
-        *byte_buf_mask[i] = 0;
+        if(i==0 && is_multiple_of_eight != 1)
+        {
+            *byte_buf_mask[i] = 255 - pow(2,remain)+1;
+        }
+        else
+        {
+            *byte_buf_mask[i] = 0;
+        }
     }
+    printf ("\n");
 }
 
 void free_mask (void)
@@ -135,11 +143,11 @@ void our_malloc(int type, void **target, int *mem_location)
     }
 }
 
-storageLocation find_location(unsigned char **mask, int data_type)
+storageLocation find_location(unsigned char **buf, int data_type)
 {
     int space = 0;
     int currentRow = rows - 1;
-    unsigned char test = 0x01;
+    unsigned char mask = 0x01;
     storageLocation result;
     int cnt = 0;
 
@@ -147,7 +155,7 @@ storageLocation find_location(unsigned char **mask, int data_type)
     {
         for(int bitIndex=0;bitIndex<8;bitIndex++)
         {
-            if((test & *mask[currentRow]) == 0)
+            if((mask & *buf[currentRow]) == 0)
             {
                 space++;  //計算空間數
                 if(space == data_type)
@@ -158,8 +166,7 @@ storageLocation find_location(unsigned char **mask, int data_type)
                         bitIndex += 8;
                     }
                     result.row = currentRow + cnt; //space start location 的 row
-                    result.location = bitIndex - data_type + 1;
-                    printf("passssssssssssssssssss\n");
+                    result.location = bitIndex - data_type + 1; //0 start
                     return  result;  //return space start location
                 }
             }
@@ -167,10 +174,11 @@ storageLocation find_location(unsigned char **mask, int data_type)
             {
                 space = 0;  //reset counter
             }
-            test = test << 1;
+            mask = mask << 1;
         }
+
         currentRow--;
-        test = 0x01;
+        mask = 0x01;
     }
     result.row = -1; //space start location 的 row
     result.location = -1;
