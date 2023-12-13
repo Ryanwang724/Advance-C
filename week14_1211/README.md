@@ -1,24 +1,8 @@
 # W14 designed program flow
 
 ## program flow
-```mermaid
-graph TD;
-main[main]-->check{"add or remove"};
-check{"add or remove"}-->|add| enqueue[enqueue_node];
-enqueue[enqueue_node]--> malloc[our_malloc];
-malloc[our_malloc]--> find_lo[find_location];
-find_lo[find_location]--> set_bit[set_bit];
-set_bit[set_bit]--> print_buf[print_buffer_status];
 
-
-check{"add or remove"}-->|remove| find[find_target_node];
-find[find_target_node]-->dequeue[dequeue_node];
-dequeue[dequeue_node]-->clear[clear_bit];
-clear[clear_bit]-->print_buf[print_buffer_status];
-
-print_buf[print_buffer_status]-->print_que[print_queue];
-print_que[print_queue]-->free[free_mask]
-```
+![flow](./readmeImg/flow.png)
 
 ## byte_buf_mask放置方式
 假設NUM_BYTE_BUF為23:  
