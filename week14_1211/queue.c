@@ -28,7 +28,7 @@ int enqueue_node(tQueue *queue, int id, int score, int data_type)
         printf("    Enqueue False!!! \n");
         return 0;
     }
-    //printf("mem_location: %d\n",mem_location);
+
     newptr->next = NULL; //set the value
     newptr->prev = NULL;
     newptr->data_type = data_type;
@@ -57,7 +57,7 @@ int enqueue_node(tQueue *queue, int id, int score, int data_type)
 
 void dequeue_node(tQueue *queue, tQueueNode *target, int data_type)
 {
-    int row,location;   //將target->location(0~NUM_BYTE_BUF)轉成row跟location
+    int row,location;    //將target->location(0~NUM_BYTE_BUF)轉成row跟location
     int rows = NUM_BYTE_BUF / 8 + 1;
     location = target->location % 8;
     row = rows - (target->location / 8) - 1;

@@ -34,7 +34,7 @@ int main (void)
             {
                 printf("    Cannot enter to the queue\n");
             }
-            remainMemory = print_buffer_status();
+            remainMemory = print_buffer_status();  //在print的同時計算剩餘的空間數量
         }
         else if (operation == 2)
         {
@@ -49,7 +49,7 @@ int main (void)
             {
                 dequeue_node(queue, target_node, target_node->data_type);
             }
-            remainMemory = print_buffer_status();
+            remainMemory = print_buffer_status(); //在print的同時計算剩餘的空間數量
 
         }
         else 

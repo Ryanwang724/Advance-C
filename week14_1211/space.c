@@ -2,8 +2,8 @@
 
 unsigned char buffer[UNIT_ELEMENT_SIZE*NUM_BYTE_BUF];
 
-int rows = NUM_BYTE_BUF / 8 + 1;
-int is_multiple_of_eight = (NUM_BYTE_BUF % 8 ==0? 1:0); //check 
+int rows = NUM_BYTE_BUF / 8 + 1;  //計算需要幾個row
+int is_multiple_of_eight = (NUM_BYTE_BUF % 8 ==0? 1:0); //check NUM_BYTE_BUF 是不是8的倍數
 int remain = NUM_BYTE_BUF % 8; //餘數 or 第一row要印多少bit
 
 unsigned char **byte_buf_mask;
@@ -17,11 +17,11 @@ void create_mask (void)
         byte_buf_mask[i] = (unsigned char *) malloc(sizeof(unsigned char));
     }
 
-    for(int i=0;i<rows;i++)   //initial
+    for(int i=0;i<rows;i++)   // initial
     {
-        if(i==0 && is_multiple_of_eight != 1)
+        if(i==0 && is_multiple_of_eight != 1) // 如果不是8的倍數，對第0 row特殊處理
         {
-            *byte_buf_mask[i] = 255 - pow(2,remain)+1;
+            *byte_buf_mask[i] = 255 - pow(2,remain)+1;  //將不會用到的bit設1
         }
         else
         {
@@ -60,7 +60,7 @@ int print_buffer_status (void)
                 printf ("%d ", currentBit); //印出first row
                 if(currentBit == 0)
                 {
-                    remainMemorySpace++;
+                    remainMemorySpace++;  //在printf的同時計算剩餘的空間數量
                 }
                 mask = mask >> 1;
             }
@@ -75,7 +75,7 @@ int print_buffer_status (void)
                 printf ("%d ", currentBit);
                 if(currentBit == 0)
                 {
-                    remainMemorySpace++;
+                    remainMemorySpace++; //在printf的同時計算剩餘的空間數量
                 }
                 mask = mask >> 1;
             }
@@ -87,11 +87,11 @@ int print_buffer_status (void)
     return remainMemorySpace;
 }
 
-int check_buf_is_all_full(void)     //0 is not full; 1 is all full
+int check_buf_is_all_full(void)     //return 0 is not full; 1 is all full
 {
     int flag = 0;  //0 is not full; 1 is all full
 
-    if(is_multiple_of_eight != 1)  //NUM_BYTE_BUF 不被8整除，對first row特殊處理
+    if(is_multiple_of_eight != 1)  //如果 NUM_BYTE_BUF 不被8整除，對first row特殊處理
     {
         if(*byte_buf_mask[0] != (unsigned char)pow(2,remain))
         {
@@ -127,12 +127,11 @@ void our_malloc(int type, void **target, int *mem_location)
     }
     else
     {
-        result = find_location(byte_buf_mask, type);
-        //printf("location: %d, row: %d\n",result.location,result.row);
+        result = find_location(byte_buf_mask, type);  //找到在哪一row的location
         if(result.location != -1 && result.row != -1)
         {
             set_bit(byte_buf_mask, result.row, result.location, type);       
-            location = (rows-1-result.row)*8 + result.location;  //0~NUM_BYTE_BUF
+            location = (rows-1-result.row)*8 + result.location;  //location範圍:0~NUM_BYTE_BUF
             *target = &buffer[location*UNIT_ELEMENT_SIZE];
             *mem_location = location;
         }
@@ -151,7 +150,7 @@ storageLocation find_location(unsigned char **buf, int data_type)
     storageLocation result;
     int cnt = 0;
 
-    while(currentRow >= 0)
+    while(currentRow >= 0)  //從最大row開始(位置:0~7)
     {
         for(int bitIndex=0;bitIndex<8;bitIndex++)
         {
@@ -165,9 +164,9 @@ storageLocation find_location(unsigned char **buf, int data_type)
                         cnt++;
                         bitIndex += 8;
                     }
-                    result.row = currentRow + cnt; //space start location 的 row
-                    result.location = bitIndex - data_type + 1; //0 start
-                    return  result;  //return space start location
+                    result.row = currentRow + cnt; //連續空間開始的 row
+                    result.location = bitIndex - data_type + 1; //該row的location(0~7)
+                    return  result;
                 }
             }
             else
@@ -180,7 +179,7 @@ storageLocation find_location(unsigned char **buf, int data_type)
         currentRow--;
         mask = 0x01;
     }
-    result.row = -1; //space start location 的 row
+    result.row = -1;
     result.location = -1;
     return result;
 }
@@ -191,7 +190,7 @@ void set_bit(unsigned char **mask, int row, int location, int data_type)
 
     set = set << location;  //go to target bit
     
-    for(int i=0;i<data_type;i++)
+    for(int i=0;i<data_type;i++) //要做幾次將bit設1
     {
         *mask[row] = *mask[row] | set;
         if(set == 0x80)
@@ -211,7 +210,6 @@ void clear_bit(unsigned char **mask, int row, int location, int data_type)
     unsigned char set = 0x01;
 
     set = set << location;  //go to target bit
-    //printf("clear bit location: %d\n",location);
 
     for(int i=0;i<data_type;i++)
     {
