@@ -15,7 +15,7 @@ int main (void)
     while (1)
     {
         printf("Remaining memory space %d\n",remainMemory);
-        printf("\nWhich type you are going to operate? \n");
+        printf("Which type you are going to operate? \n");
         printf("1. Add an item\n");
         printf("2. Remove an item with a specific Id\n");
         
