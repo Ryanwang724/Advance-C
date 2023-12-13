@@ -50,7 +50,6 @@ int main (void)
                 dequeue_node(queue, target_node, target_node->data_type);
             }
             remainMemory = print_buffer_status(); //在print的同時計算剩餘的空間數量
-
         }
         else 
         {

@@ -175,7 +175,6 @@ storageLocation find_location(unsigned char **buf, int data_type)
             }
             mask = mask << 1;
         }
-
         currentRow--;
         mask = 0x01;
     }
