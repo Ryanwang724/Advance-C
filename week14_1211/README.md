@@ -1,7 +1,28 @@
 # W14 designed program flow
 
+## program flow
+```mermaid
+graph TD;
+main[main]-->check{"add or remove"};
+check{"add or remove"}-->|add| enqueue[enqueue_node];
+enqueue[enqueue_node]--> malloc[our_malloc];
+malloc[our_malloc]--> find_lo[find_location];
+find_lo[find_location]--> set_bit[set_bit];
+set_bit[set_bit]--> print_buf[print_buffer_status];
+
+
+check{"add or remove"}-->|remove| find[find_target_node];
+find[find_target_node]-->dequeue[dequeue_node];
+dequeue[dequeue_node]-->clear[clear_bit];
+clear[clear_bit]-->print_buf[print_buffer_status];
+
+print_buf[print_buffer_status]-->print_que[print_queue];
+print_que[print_queue]-->free[free_mask]
+```
+
 ## byte_buf_mask放置方式
-假設NUM_BYTE_BUF為23:
+假設NUM_BYTE_BUF為23:  
+
 ![mask放置方式](./readmeImg/mask放置方式.png)
 
 ## 變數說明
@@ -46,7 +67,7 @@ void create_mask (void)
 ```
 
 ### int print_buffer_status (void)
-
+印出buffer時，從0開始印，如果NUM_BYTE_BUF不是8的倍數，第0 row要做特殊處理，使用餘數判斷mask要右移多少位元在開始print，print的同時去計算0的數量當作剩餘的記憶體空間，在最後進行回傳。
 ```C
 int print_buffer_status (void)
 {
@@ -93,5 +114,78 @@ int print_buffer_status (void)
     }
     printf ("\n");
     return remainMemorySpace;
+}
+```
+
+### storageLocation find_location(unsigned char **buf, int data_type)
+根據輸入的data_type去尋找連續可用的空間，  
+如果找到的話，會回傳該空間的起始位置(row跟location)，  
+若找不到，則將row跟location設為-1並回傳。
+```C
+storageLocation find_location(unsigned char **buf, int data_type)
+{
+    int space = 0;
+    int currentRow = rows - 1;
+    unsigned char mask = 0x01;
+    storageLocation result;
+    int cnt = 0;
+
+    while(currentRow >= 0)  //從最大row開始(位置:0~7)
+    {
+        for(int bitIndex=0;bitIndex<8;bitIndex++)
+        {
+            if((mask & *buf[currentRow]) == 0)
+            {
+                space++;  //計算空間數
+                if(space == data_type)
+                {
+                    while((bitIndex - data_type + 1) < 0)
+                    {
+                        cnt++;
+                        bitIndex += 8;
+                    }
+                    result.row = currentRow + cnt; //連續空間開始的 row
+                    result.location = bitIndex - data_type + 1; //該row的location(0~7)
+                    return  result;
+                }
+            }
+            else
+            {
+                space = 0;  //reset counter
+            }
+            mask = mask << 1;
+        }
+        currentRow--;
+        mask = 0x01;
+    }
+    result.row = -1;
+    result.location = -1;
+    return result;
+}
+```
+
+### void set_bit(unsigned char **mask, int row, int location, int data_type)
+從傳入的row跟location開始，放置data_type個1，當set == 0x80時，代表該row已設定完，跳至下一row繼續執行，clear_bit也同理。
+
+```C
+void set_bit(unsigned char **mask, int row, int location, int data_type)
+{
+    unsigned char set = 0x01;
+
+    set = set << location;  //go to target bit
+    
+    for(int i=0;i<data_type;i++) //要做幾次將bit設1
+    {
+        *mask[row] = *mask[row] | set;
+        if(set == 0x80)
+        {
+            set = 0x01; //reset
+            row = row - 1;
+        }
+        else
+        {
+            set = set << 1;
+        }
+    }
 }
 ```
