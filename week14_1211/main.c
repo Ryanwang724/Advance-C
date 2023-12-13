@@ -6,7 +6,7 @@ int main (void)
 {
     tQueue *queue;
     int operation, units;
-    int rows = NUM_BYTE_BUF / 8 + 1;
+    int rows = NUM_BYTE_BUF / 8 + 1 - (NUM_BYTE_BUF % 8 ==0? 1:0);  //計算需要幾個row
     tQueueNode *target_node;
     int id, score=0, ret, remainMemory = NUM_BYTE_BUF;
     queue = createQueue();

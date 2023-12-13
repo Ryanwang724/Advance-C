@@ -2,8 +2,8 @@
 
 unsigned char buffer[UNIT_ELEMENT_SIZE*NUM_BYTE_BUF];
 
-int rows = NUM_BYTE_BUF / 8 + 1;  //計算需要幾個row
 int is_multiple_of_eight = (NUM_BYTE_BUF % 8 ==0? 1:0); //check NUM_BYTE_BUF 是不是8的倍數
+int rows = NUM_BYTE_BUF / 8 + 1 - (NUM_BYTE_BUF % 8 ==0? 1:0);  //計算需要幾個row
 int remain = NUM_BYTE_BUF % 8; //餘數 or 第一row要印多少bit
 
 unsigned char **byte_buf_mask;

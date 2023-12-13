@@ -4,7 +4,7 @@
 #include "main.h"
 #include <math.h>
 
-#define NUM_BYTE_BUF           23
+#define NUM_BYTE_BUF           8
 #define UNIT_ELEMENT_SIZE      32
 
 typedef struct {
