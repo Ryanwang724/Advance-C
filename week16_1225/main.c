@@ -43,13 +43,13 @@ typedef struct user_head
 
 tUserHead* initial_user_list(void);
 void print_user_info(tUserHead *list);
-void add_to_list(tUserHead *list, int type, char *name, char *number, char *areaCode, int *service);
+void add_to_list(tUserHead *list, int type, char *name, char *number, char *areaCode, tServiceEnum *service);
 
 int main()
 {
     char nameBuf[10];
     int type; // 1: home 2: cellular
-    int service;
+    tServiceEnum service;
     char numBuf[15];
     char areaCodeBuf[5];
     
@@ -72,10 +72,7 @@ int main()
         else if(type == 2)
         {
             printf("Enter service provider (CHT:0 FET: 1 TWN:2): ");
-            scanf("%d",&service);
-#ifdef DEBUG            
-            printf("Debug - service: %d\n", service);
-#endif            
+            scanf("%d",&service);           
             printf("Enter new user phone number \"cellular\": ");
             scanf("%s",numBuf);
             add_to_list(list, type, nameBuf, numBuf, NULL, &service);
@@ -136,9 +133,6 @@ void print_user_info(tUserHead *list)
                     printf("Unknown");
             }
             printf(" )\n");
-#ifdef DEBUG            
-            printf("Debug - provider: %d\n", node_ptr->phoneNumber.cellular.provider);
-#endif
         }
         userCnt++;
         node_ptr = node_ptr->next;
@@ -146,7 +140,7 @@ void print_user_info(tUserHead *list)
     printf("\n\n");
 }
 
-void add_to_list(tUserHead *list, int type, char *name, char *number, char *areaCode, int *service)
+void add_to_list(tUserHead *list, int type, char *name, char *number, char *areaCode, tServiceEnum *service)
 {
     tUser *newNode;
     newNode = (tUser *) malloc (sizeof(tUser));
@@ -163,10 +157,6 @@ void add_to_list(tUserHead *list, int type, char *name, char *number, char *area
     {
         newNode->phoneNumber.cellular.provider = *service;
         strcpy(newNode->phoneNumber.cellular.number,number);
-#ifdef DEBUG            
-        printf("Debug - add_to_list provider: %d\n", newNode->phoneNumber.cellular.provider);
-        printf("Debug - add_to_list service: %d\n",*service);
-#endif
     }
 
     if(list->counts == 0)
